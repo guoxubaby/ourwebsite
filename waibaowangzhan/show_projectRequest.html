@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="bootstrap-3.2.0-dist/js/bootstrap.min.js"></script>
+    <link href="bootstrap-3.2.0-dist/css/bootstrap.min.css" rel="stylesheet">
+    <title></title>
+</head>
+<body>
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">关于我们</a>
+        </div>
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">成功案例</a>
+        </div>
+        <div>
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        登录/注册
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">注册</a></li>
+                        <li><a href="#">登录</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-9">
+            <form role="form" action="#">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="content" placeholder="搜索">
+                        </div>
+                        <div class="col-sm-3">
+                            <button class="btn btn-block" id="query">给我搜</button>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!--分页主体html-->
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-9">
+            <div id="table">
+                <div id="page"></div><!--页码显示面板-->
+
+                <div id="table_body">
+                    <table class="table table-striped">
+                        <caption></caption>
+                        <thead>
+                        <tr>
+                            <th>名字</th>
+                            <th>简介</th>
+                            <th>联系电话</th>
+                            <th>下载附件</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div><!--内容显示面板-->
+
+            </div>
+        </div>
+    </div>
+
+    <!--主体html结束-->
+</body>
+<script>
+    //分页所需的JavaScript
+
+    var nowPage = 1;//当前页码
+    var totalPage = 1;//总页数
+
+    var pageGroup_ready = 0;//用于标记是否生成了页码面板
+    var pageGroup_begin = 1;//当前页码组的起始页码
+    var pageGroup_size = 10;//页码组的大小
+
+    //显示分页内容
+    function show(){
+        var query = "select * from project_request";
+        var queryCount = "select count(*) as num from project_request";
+        var content = $("#content").val();
+        if( content ){
+            query = "select * from project_request where brief like '%"+content+"%' OR project_name like '%"+content+"%'";
+            queryCount = "select count(*) as num from project_request where brief like '%"+content+"%' OR project_name like '%"+content+"%'";
+        }
+        $.ajax({
+            type: "post",
+            url: "back.php",
+            dataType: "json",
+            data: {page:nowPage, query:query, queryCount:queryCount, db:"projects" },//默认显示第一页的数据
+            success: function(res){
+                var i;
+                if(res.success == true){
+                    totalPage = res.info;//得到总页数
+                    if(pageGroup_ready == 0){//还没有生成页码面板
+                        //生成页码面板
+                        $("#page").append("<div class='btn-group' id='page_group'></div>");
+                        var end = 10;
+                        if(totalPage < 10){
+                            end = res.info;
+                        }
+                        for(i=1; i<=end; ++i){
+                            $("#page_group").append("<button class='btn btn-sm btn-default selectPage' id="+i+">"+i+"</button>");
+                            $(".selectPage").click(choosePage);
+                        }
+                        if(res.info > 10){
+                            $("#page_group").append("<button class='btn btn-sm btn-default ' id='switchNextGroup'>>></button>");
+                            $("#switchNextGroup").click(switchNextGroup);
+                        }
+                        pageGroup_ready = 1;
+                    }
+
+                    $("tbody").remove();
+                    $("table").append("<tbody></tbody>");
+                    var num = res.data.length;
+                    for(i=0; i<num; ++i){
+                        $("tbody").append(
+                                "<tr>"+
+                                "<td>"+res.data[i]['project_name']+"</td>"+
+                                "<td>"+res.data[i]['brief']+"</td>"+
+                                "<td>"+res.data[i]['tel']+"</td>"+
+                                "<td><a href='file/"+res.data[i]['id']+".rar' download='附件.rar'>下载附件</a></td>"+
+                                "</tr>"
+                        );
+                    }
+                } else{
+                    alert("查询错误");
+                }
+            }
+        });
+    }
+    $(document).ready(show);
+    $("#query").click(show);
+
+    //选择页数
+    function choosePage(){
+        nowPage = $(this).attr("id");//修改当前页码
+        show();//调用显示分页内容函数
+    }
+
+    //生成下一个页码分组
+    function switchNextGroup(){
+        pageGroup_begin = pageGroup_begin + pageGroup_size;
+        var end = pageGroup_begin + pageGroup_size - 1;
+        var i;
+        if(end > totalPage){
+            end = totalPage;
+        }
+        $("#switchNextGroup").remove();
+        $("#switchBeforeGroup").remove();
+        $(".selectPage").remove();
+        $("#page_group").append("<button class='btn btn-sm btn-default' id='switchBeforeGroup'><<</button>");
+        $("#switchBeforeGroup").click(switchBeforeGroup);
+        for(i=pageGroup_begin; i<=end; ++i){
+            $("#page_group").append("<button class='btn btn-sm btn-default selectPage' id="+i+">"+i+"</button>");
+            $(".selectPage").click(choosePage);
+        }
+        if(end < totalPage){
+            $("#page_group").append("<button class='btn btn-sm btn-default ' id='switchNextGroup'>>></button>");
+            $("#switchNextGroup").click(switchNextGroup);
+        }
+    }
+
+    //生成上一个页码分组
+    function switchBeforeGroup(){
+        pageGroup_begin = pageGroup_begin - pageGroup_size;
+        var end = pageGroup_begin + pageGroup_size - 1;
+        var i;
+        $("#switchNextGroup").remove();
+        $("#switchBeforeGroup").remove();
+        $(".selectPage").remove();
+        if(pageGroup_begin > 1){
+            $("#page_group").append("<button class='btn btn-sm btn-default ' id='switchBeforeGroup'><<</button>");
+            $("#switchBeforeGroup").click(switchBeforeGroup);
+        }
+        for(i=pageGroup_begin; i<=end; ++i){
+            $("#page_group").append("<button class='btn btn-sm btn-default selectPage' id="+i+">"+i+"</button>");
+            $(".selectPage").click(choosePage);
+        }
+        $("#page_group").append("<button class='btn btn-sm btn-default' id='switchNextGroup'>>></button>");
+        $("#switchNextGroup").click(switchNextGroup);
+
+    }
+</script>
+</html>
