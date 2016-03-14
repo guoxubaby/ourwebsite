@@ -1,0 +1,91 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <script src="js/jquery-2.1.1.min.js"></script>
+        <script src="bootstrap-3.2.0-dist/js/bootstrap.min.js"></script>
+        <link href="bootstrap-3.2.0-dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            a{
+                font-family: "Microsoft YaHei", "微软雅黑", "Microsoft JhengHei", "华文细黑", STHeiti, MingLiu;
+            }
+            button{
+                font-family: "Microsoft YaHei", "微软雅黑", "Microsoft JhengHei", "华文细黑", STHeiti, MingLiu;
+            }
+
+            .paper{
+                background: #fff;/*一定要加，否则就是透明的*/
+                position: relative;
+                border: 1px #ccc solid;
+                border-radius: 5px;
+                padding: 20px;
+                box-shadow:0 1px 4px rgba(170, 104, 9, 0.30), 0 0 30px rgba(170, 104, 9, 0.10) inset;
+            }
+            .paper:after{
+                /*设置层级，把这个元素放在下面*/
+                content:"";
+                position:absolute;
+                z-index:-1;
+                -webkit-box-shadow:0 0 20px rgba(0, 0, 0, 0.44);
+                -moz-box-shadow:0 0 20px rgba(0, 0, 0, 0.80);
+                box-shadow:0 0 50px rgba(0,0,0,1);
+                top:50%;
+                bottom:0;
+                left:10px;
+                right:10px;
+                -moz-border-radius:100px / 10px;
+                border-radius:100px / 10px;
+            }
+            body{
+                background-image: url("resource/back.png");
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">关于我们</a>
+            </div>
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">成功案例</a>
+            </div>
+            <div>
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            登录/注册
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="register_login/register.html">注册</a></li>
+                            <li><a href="register_login/login.html">登录</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <br/><br/>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6 paper">
+                    <br/>
+                    <button id="1" class="btn btn-default btn-block">找开发</button>
+                    <br/>
+                    <button id="2" class="btn btn-default btn-block">接项目</button>
+                    <br/>
+                </div>
+            </div>
+        </div>
+    </body>
+	<script>
+		var dev = function(){
+			window.location.href = "project_request.html";
+		};
+		$("#1").click(dev);
+		
+		var req = function(){
+			window.location.href = "project_complete.html";
+		};
+		$("#2").click(req);
+	</script>
+</html>

@@ -1,0 +1,85 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="bootstrap-3.2.0-dist/js/bootstrap.min.js"></script>
+    <link href="bootstrap-3.2.0-dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-default" role="navigation">
+    <div class="navbar-header">
+        <a class="navbar-brand" href="#">关于我们</a>
+    </div>
+    <div class="navbar-header">
+        <a class="navbar-brand" href="#">成功案例</a>
+    </div>
+    <div>
+        <ul class="nav navbar-nav">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    登录/注册
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="register_login/register.html">注册</a></li>
+                    <li><a href="register_login/login.html">登录</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+        <div class="form-group">
+            <label>项目名称</label>
+            <input type="text" class="form-control" id="project_name" placeholder="请输入项目名称">
+        </div>
+        <div class="form-group">
+            <label>联系方式</label>
+            <input type="text" class="form-control" id="tel" placeholder="电话">
+        </div>
+        <div class="form-group">
+            <label>项目简介</label>
+            <textarea rows="5" cols="102" id="brief"></textarea>
+        </div>
+
+
+
+        <form role="form" enctype="multipart/form-data" method="POST" target="upload" action="upload_complete_file.php" >
+            <div class="form-group">
+                <input type="file" name="uploadFile" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-block"/>
+            </div>
+        </form>
+        <br/>
+        <button id="submit" class="btn btn-default btn-block">提交</button>
+        <iframe name="upload" style="display:none"><!--iframe页面-->
+        </iframe>
+    </div>
+</div>
+</body>
+<script>
+    function submit(){
+        var project_name = $("#project_name").val();
+        var brief = $("#brief").val();
+        var tel = $("#tel").val();
+        $.ajax({
+            type: "post",
+            url: "complete_file_submit.php",
+            dataType: "json",
+            data: { project_name: project_name, brief: brief, tel:tel },
+            success: function(res){
+                if(res.success == true){
+                    window.location.href = "index.html";
+                } else{
+                    alert(res.info);
+                }
+            }
+        })
+    }
+    $("#submit").click(submit);
+</script>
+</html>

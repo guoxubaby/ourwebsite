@@ -1,0 +1,9 @@
+http://localhost/waibaowangzhan/index.html
+http://localhost/waibaowangzhan/project_request.html
+http://localhost/waibaowangzhan/request_file_submit.php
+http://localhost/waibaowangzhan/show_projectRequest.html
+http://localhost/waibaowangzhan/show_projectComplete.html
+http://localhost/waibaowangzhan/project_complete.html
+
+
+http://localhost/waibaowangzhan/register_login/register.html
